@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>亞特蘭提斯的金幣 Golden Coins of ATLANTIS </title>
+    <style>
+
+        
+body {
+    text-align: center;
+    background-image: url(./materials/deepSeaWater.jpg);
+    background-size: cover;
+    color:white;
+    /* 
+    自訂滑鼠圖樣：
+    指定滑鼠圖片，
+    再指定滑鼠哪個點 
+    (x,y軸位置)為下指令的點
+    逗號之後 auto，指不管甚麼地方
+    語法：cursor: url(./crosshair.png) 50 50, auto; 
+    url(圖檔路徑) x位置 y位置, 預設樣式 */
+        }
+* {
+    font-family: "微軟正黑體";
+}        
+.main{
+        font-family: "微軟正黑體";      
+        width: 100%vw;
+        margin: auto;
+        padding: 10px;
+        text-align: center;
+        /* background-color: lightseagreen; */
+}    
+
+.divW1-2{
+    display: block; 
+    margin: 20px;  
+
+}
+.infoDiv1 {
+    font-family: "微軟正黑體";
+    font-size: 1.1em;
+    background-color: darkolivegreen;
+    padding: 10px 25px;
+    margin: 5px auto;    
+    border-radius: 30px;
+    width: 350px;
+}
+
+
+.infoDiv2 {
+    font-family: "微軟正黑體";
+    font-size: 1.1em;
+    background-color: darkolivegreen;
+    padding: 10px 25px;
+    margin: 5px auto;   
+    border-radius: 30px;
+    width: 350px;
+}
+
+table {
+        margin: 20px auto;
+        /*table上下留白20px，左右居中 */
+    }
+
+td {
+      /* border: 1px solid black; */
+      width: 100px;
+      height: 100px;
+      padding: 2px;
+      /* background-color:  */
+        }
+
+.btn {
+    background-color: rgba(255, 255, 255, 15);
+    color: darkred;
+    text-align: center;
+    border: 2px solid lightgray;
+    border-radius: 5px;
+    font-size: 1.2em;
+    padding: 3px;
+    cursor: pointer;
+    transition-duration: 0.5s;
+    
+    /* display: inline-block;
+    若有多個按扭時可用，讓所有按扭呈現一行 
+    記得還要設margin: 如 2px 5px;
+    使用font-size就可以改變btn的尺寸
+     */
+}
+.btn:hover{
+    background-color: rgba(150,150,0, 5);;
+    color: white;
+    box-shadow: 0 17px 50px 0 rgba(0,0,0,0.19), 
+                0px 0px 15px 5px rgba（255,255,190,.75）,;
+    
+    }
+
+.red {
+    /* background: red; */
+    background-position:center;
+    position: relative;
+    width:10px;
+    height:100px;
+    background-image: url(./materials/goldenCoin2.png);
+    background-size: cover;
+}
+        
+.blue {
+    /* background: blue; */
+    background:transparent;
+    /* background-image: url(./materials/goldenCoin2.png); */
+}
+.tBox {
+    width: 100px;
+    height: 100px;
+}
+
+    </style>
+
+</head>
+
+
+
+<body>
+   
+<h1>尋找亞特蘭提斯的金幣 <br> Golden Coins of ATLANTIS</h1>
+<input type="button" 
+       value="開始遊戲" 
+       id="startBtn" 
+       class="btn"> <br>
+       
+<div class="main">   
+    <table>
+        <tr>
+            <td class="tBox"></td>
+            <td class="tBox"></td>
+            <td class="tBox"></td>
+        </tr>
+        <tr>
+            <td class="tBox"></td >
+            <td class="tBox"></td >
+            <td class="tBox"></td >
+        </tr>
+        <tr>
+            <td class="tBox"></td>
+            <td class="tBox"></td>
+            <td class="tBox"></td>
+        </tr>
+    </table>
+   
+
+
+<div class="divW1-2">
+
+    <div class="infoDiv1">目前金幣數量: 
+                <span id="scoreText">0</span>
+                <br>
+    </div>
+    <div class="infoDiv2">最高金幣數量: 
+               <span id="highNameText">沒有人</span> 
+               的金幣數量是
+               <span id="highScoreText">0</span>
+               <br>
+     </div>
+</div>     
+    
+    
+</div>
+<!-- end of main div________________________________________________ -->
+
+<script>
+        let score = 0;
+        let scoreText = document.getElementById("scoreText");
+        let startBtn = document.getElementById("startBtn");
+        let tds = document.getElementsByTagName("td");
+
+        let gameTimer = 0;
+        /* 設定計時器的變數為 0 ，
+        避免被 clearInterval 清掉，才可以重複利用。
+        setInterval預設是會把程式清掉，
+        所以要gameTimer一開始設為0，
+        避免被JS清掉，可以重複利用setInterval程式
+        */
+
+        let high = { name: "", score: 0 };
+        // 將最高分設成一個陣列
+
+        let highNameText = document.getElementById("highNameText");
+        let highScoreText = document.getElementById("highScoreText");
+
+        let highStorage = window.localStorage.getItem("highscore");
+        // getItem抓取，但要先if判斷，若有東西，不是空的，
+        if(highStorage != null){
+            high = JSON.parse(highStorage);
+            // 再把文字轉乘JSON物件，用JSN.parse指令
+            highNameText.innerText = high.name;
+            highScoreText.innerText = high.score;
+        }
+
+        startBtn.onclick = () => {
+            // 將開始按鈕停用
+            startBtn.setAttribute("disabled", true);
+            score = 0;
+            scoreText.innerText = score;
+            /*
+            1. user按了開始按扭，
+               就將開始按扭設定停用指令，避免user重複執行。
+            2. 且要設分數歸0。
+            3. 將 scoreText,用innerText語法改為 score。
+            */
+
+            gameTimer = setInterval(game, 1000);
+            /*
+            4. 多久變換一次格子：
+               設gameTimer為setInterval(()=> {}, 1000);
+               但一秒鐘(1000)之後才會執行換格子的工作，
+            5. 所以要寫func let game= () => { }，
+               讓一按下樞紐就會執行換格子的工作, 
+               而不是等一秒之後
+               let game func寫在 onclik外面，
+               見下方let game = () => { 語法
+            */
+
+
+            game();
+            setTimeout(()=>{
+                clearInterval(gameTimer);
+                for(let td of tds){
+                    td.classList.remove("red");
+                    td.classList.remove("blue");
+                    /*指CSS中 .red class ，
+                    remove()括號裡面為class的名稱*/
+                }
+                alert(`時間到，你得到 ${score} 分!`);
+                startBtn.removeAttribute("disabled");
+                /*用反引號寫字串比較便利，不用一直寫+號了
+                  結束時，還要把開始按扭功能打開
+                */
+
+                if(score > high.score){
+                    let playerName = prompt("恭喜你得到最高分，請輸入你的名字");
+                    high.name = playerName;
+                    highNameText.innerText = playerName;
+                    high.score = score;
+                    highScoreText.innerText = score;
+
+                    /* 
+                    window.localStorage.setItem這個指令只能存文字
+                    所以要用JSON.stringify 將JSON陣列轉成文字
+                    按F12，到web的appliation面板,local storage查看
+                    可將資料存在於此，若按禁止樞紐則可清除
+                    */
+                    window.localStorage.setItem("highscore", JSON.stringify(high));
+                }
+
+            }, 3000);
+        }
+
+
+
+        /* 
+        一秒鐘之後才會執行換格子的工作，
+        所以要寫func let game= () => { }，
+        讓一按下樞紐就會執行換格子的工作
+        */
+        let game = () => {
+            for(let td of tds){
+                td.classList.remove("red");
+                td.classList.remove("blue");
+                //指CSS中 .red class，
+                //remove()括號裡面為class的名稱
+            }
+            
+            for(let i=0;i<3;i++){
+                // let rand= Math.floor(Math.random()*9);或
+                let rand = Math.round(Math.random()*8);   
+                if(tds[rand].classList.contains("red")){
+                    i--;
+                    //當tds裡的td(由陣列rand抓出，已經有red class，重新執行一次)
+                    //宣告td就是 上面tds陣列裡的值 td就是 tods裡的一個td
+                    // tds.forEach(()=>{}只能用陣列)
+                }else{
+                    tds[rand].classList.add("red");
+                }               
+            }
+        }
+
+// 點擊正確加分
+        for(let td of tds) {
+            td.onclick = () => {
+                if(td.classList.contains("red")){
+                    td.classList.remove("red");
+                    td.classList.add("blue");
+                    score++;
+                    scoreText.innerText = score;
+
+                // td被onclick時
+                // 若td含有contains 紅色，
+                // contains()括號面為class名稱
+                // score++變數要+1，再繼續執行，
+                // 當然文字再改.innerText為score。
+                }
+            } 
+        }
+
+        // for(let i=0;i<3;i++){
+        //     let rand = Math.round(Math.random()*8);
+        //     tds[rand].classList.add("red");
+        // }
+    </script>
+</body>
+
+</html>
+
